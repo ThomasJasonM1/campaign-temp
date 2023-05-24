@@ -7,12 +7,11 @@ const bPromise = require("bluebird");
 const { XMLParser } = require("fast-xml-parser");
 // const moment = require('moment');
 const db = require('./db');
-const afterDate = '2023-05-22T01:00:00.000Z'; 
+const afterDate = '2023-05-24T01:00:00.000Z'; 
 const pageLimit = 40;
 const tnStatusesToSave = ['RECEIVED', 'COMPLETE', 'PARTIAL', 'FAILED']
 
 const alwaysArray = [
-    // 'TnOptionOrder.TnOptionGroups.TnOptionGroup',
     'TnOptionOrder.TnOptionGroups.TnOptionGroup.TelephoneNumbers.TelephoneNumber',
     'TnOptionOrder.ErrorList.Error',
 ];
@@ -98,7 +97,6 @@ async function getDataFromBw(orderId) {
         });
 
         const jObj = await parser.parse(bwResponse.data);
-        // console.log('jObj', jObj.TnOptionOrder.TnOptionGroups);
         return jObj;
     } 
     catch (err) {
@@ -166,11 +164,6 @@ async function saveData(conn, event) {
                 return dbResponseComps;
             })) : null;
 
-        // console.log('time', time, Status);
-        // console.log('meta', meta);
-        // console.log('parsedData', parsedData);
-        // console.log('ErrorList', ErrorList);
-        // console.log('bwData', typeof(bwData.TnOptionOrder.TnOptionGroups.TnOptionGroup), bwData.TnOptionOrder.TnOptionGroups.TnOptionGroup /*, A2pSettings, TelephoneNumbers, typeOf(TelephoneNumbers)*/);
         return parsedData;
     } catch (error) {
         fsPromises.appendFile('errors.txt', `Error on saveData, Event ${JSON.stringify(event)}: ${JSON.stringify(error)}\n`);
@@ -192,7 +185,7 @@ async function waitSeconds(seconds) {
 
 async function getData(conn, lastCall) {
     console.log('Calling getData');
-    if (lastCall == null || lastCall.items.length > 0)
+    if (lastCall == null || lastCall.items.length === pageLimit)
     {
         // if (nextPageToGet > 1) return getData(conn, { items: [] });
         let lastDate = lastCall?.items ? lastCall.items[pageLimit - 1].time : null;

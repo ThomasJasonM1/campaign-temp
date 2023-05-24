@@ -16,7 +16,6 @@ async function getBrandsFromTcr(currentPage) {
             }
         };
         const brands = await axios.get(
-            // `https://csp-api.campaignregistry.com/v2/enum/optionalAttributeNames`,
             `https://csp-api.campaignregistry.com/v2/brand?page=${currentPage}&recordsPerPage=20`,
             params
         )
@@ -27,9 +26,6 @@ async function getBrandsFromTcr(currentPage) {
         const { page, totalRecords, records } = await brands.data;
         const returnObject = { page, totalRecords, records };
 
-        // console.log(`Current Page: ${page}`);
-        // console.log(`Record Count: ${totalRecords}`);
-        // console.log(`Brand List: ${JSON.stringify(records)}`);
         return returnObject;
     } catch (error) {
         fsPromises.appendFile('errors.txt', `Error on page ${currentPage}: ${JSON.stringify(error)}\n`);
@@ -68,7 +64,6 @@ async function getData(conn, lastCall) {
     console.log('Calling getData');
     if (lastCall == null || lastCall.records.length > 0)
     {
-        // if (lastCall && lastCall.page > 1) return getData(conn, { records: [] });
         const nextPage = lastCall?.page ? lastCall.page + 1 : startingPage;
         const lastResult = await getBrandsFromTcr(nextPage);
         console.log('Got results for TCR, on page: ', lastResult.page);

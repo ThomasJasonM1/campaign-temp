@@ -26,7 +26,6 @@ async function getCampaignsFromTcr(currentPage) {
             console.log('Error getting campaign', JSON.stringify(e));
         });
 
-        // console.log(campaigns.data);
         const { page, totalRecords, records } = await campaigns.data;
         const returnObject = { page, totalRecords, records };
         return returnObject;
@@ -133,7 +132,6 @@ async function getData(conn, lastCall) {
     console.log('Calling getData');
     if (lastCall == null || lastCall.records.length > 0)
     {
-        // if (lastCall && lastCall.page > 1) return getData(conn, { records: [] });
         const nextPage = lastCall?.page ? lastCall.page + 1 : startingPage;
         const lastResult = await getCampaignsFromTcr(nextPage);
         console.log('Got results for TCR, on page: ', lastResult?.page);

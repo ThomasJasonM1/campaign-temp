@@ -4,9 +4,8 @@ const fs = require('fs');
 const fsPromises = fs.promises;
 const axios = require('axios').default;
 const bPromise = require("bluebird");
-// const moment = require('moment');
 const db = require('./db');
-const afterDate = '2023-05-22T01:00:00.000Z';
+const afterDate = '2023-05-24T01:00:00.000Z';
 const eventList = [ 'BRAND_ADD', 'BRAND_IDENTITY_STATUS_UPDATE', 'BRAND_DELETE', 'CAMPAIGN_ADD', 'CAMPAIGN_BILLED',
     'CAMPAIGN_SHARE_DELETE', 'CAMPAIGN_NUDGE', 'CAMPAIGN_SHARE_ADD', 'CAMPAIGN_DCA_COMPLETE', 'CAMPAIGN_EXPIRED',
     'CAMPAIGN_RESUBMITTED', 'CAMPAIGN_SHARE_ACCEPT' ];
@@ -38,7 +37,6 @@ async function getBrandEvents(conn, lastDateUsed) {
         const savedData = await bPromise
             .map(events.data.items, event => saveData(conn, event), {concurrency: 3})
             .catch(err => console.log(`Mapping Event Error: ${err}`));
-            // console.log('events', events.data);
         return events.data;
     } catch (error) {
         fsPromises.appendFile('errors.txt', `Error on getBrandEvents, lastDateUsed ${lastDateUsed}: ${JSON.stringify(error)}\n`);
@@ -125,7 +123,7 @@ async function waitSeconds(seconds) {
 
 async function getData(conn, lastCall) {
     console.log('Calling getData');
-    if (lastCall == null || lastCall.items.length > 0)
+    if (lastCall == null || lastCall.items.length === pageLimit)
     {
         let lastDate = lastCall?.items ? lastCall.items[pageLimit - 1].time : null;
         const lastResult = await getBrandEvents(conn, lastDate);
